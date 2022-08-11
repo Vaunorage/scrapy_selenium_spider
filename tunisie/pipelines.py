@@ -15,6 +15,7 @@ class TunisiePipeline:
         
 class SQLite_Pipeline:
     def __init__(self):
+        # change the database name accordingly
         self.con = sqlite3.connect("demo.db")
         self.cur = self.con.cursor()
         self.cur.execute(

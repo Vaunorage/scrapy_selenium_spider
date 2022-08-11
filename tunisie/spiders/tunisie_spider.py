@@ -21,7 +21,8 @@ class TunisieSpiderSpider(scrapy.Spider):
         yield scrapy.Request(url,callback=self.parse)
 
     def parse(self, response):
-        with open("/home/lubuntu/scrapy_projects/tunisie/tunisie/config.json",'r') as f:
+        # change path according to your system
+        with open("spiders/config.json",'r') as f:
             config = json.load(f)
         resp= config.get("source")
         next_page = config.get("next")

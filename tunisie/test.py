@@ -5,10 +5,14 @@
 # q_dict = parse_qs(q.query)
 # page = q_dict.get("rech_page_num")[0]
 # print(page)
-import re
+# import re
 
-# raw = re.search("(?:\[)(.*)(?:\])",'[Réf:3103437] Appartement parking residence gardée à nord hilton').group().split()
-# ref = "".join([l for l in raw if l.isdigit()])
-# print(ref)
-raw = re.search("\s[A-Z a-z].*","[Réf:3103437] Appartement parking residence gardée à nord hilton").group().strip()
-print(raw)
+# # raw = re.search("(?:\[)(.*)(?:\])",'[Réf:3103437] Appartement parking residence gardée à nord hilton').group().split()
+# # ref = "".join([l for l in raw if l.isdigit()])
+# # print(ref)
+# raw = re.search("\s[A-Z a-z].*","[Réf:3103437] Appartement parking residence gardée à nord hilton").group().strip()
+# print(raw)
+
+# import os
+# p = os.path.exists('firefoxdriver/geckodriver')
+# print(p)
