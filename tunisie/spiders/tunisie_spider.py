@@ -2,7 +2,7 @@ import json
 import re
 from threading import local
 from tkinter.tix import Select
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urljoin, urlparse
 import scrapy
 from selenium import webdriver
 from scrapy.selector import Selector
@@ -15,42 +15,32 @@ class TunisieSpiderSpider(scrapy.Spider):
     allowed_domains = ['tunisie-annonce.com']
     count = 0
     con = Console()
+    save_db = ''
 
     def start_requests(self):
-        url = 'http://www.tunisie-annonce.com'
+        self.save_db = bool(self.save)
+        url = 'http://www.tunisie-annonce.com/'
         yield scrapy.Request(url,callback=self.parse)
 
     def parse(self, response):
-        # change path according to your system
-        with open("spiders/config.json",'r') as f:
-            config = json.load(f)
-        resp= config.get("source")
-        next_page = config.get("next")
-        records = config.get("records")
-        sel = Selector(text=resp)
+        with open("config.json",'r') as f:
+            source = json.load(f)['source']
+        sel = Selector(text=source)
+        results = sel.xpath("//table[@class='RecordsNumber']//td/b[1]/text()").get()
+        matched = re.search(".*[0-9]",results).group()
+        total_records = int(matched.replace(" ",''))
+        if total_records > 25:
+            next_page = sel.xpath("//td[@width='40'][3]/a/@href").get()
+            next_page = response.urljoin(next_page)
+        else:
+            next_page = None
         for row in sel.xpath("//tr[@class='Tableau1']"):
             self.count +=1
             listing_url = response.urljoin(row.xpath("./td[8]/a/@href").get())
             yield scrapy.Request(url=listing_url,callback=self.parse_listing)
-            # loader = ItemLoader(item=TunisieItem())
-            # region = row.xpath("./td[2]/a/text()").get()
-            # nature = row.xpath("./td[4]/text()").get()
-            # typpe = row.xpath("./td[6]/text()").get()
-            # annonce = row.xpath("./td[8]/a/text()").get()
-            # prix = row.xpath("./td[10]/text()").get()
-            # modifiee = row.xpath("./td[12]/text()").get()
-
-            # loader.add_value("Region",value=region)
-            # loader.add_value("Nature",value=nature)
-            # loader.add_value("Type",value=typpe)
-            # loader.add_value("Annonce",value=annonce)
-            # loader.add_value("Prix",value=prix)
-            # loader.add_value("Modifiee",value=modifiee)
-
-            # yield loader.load_item()
         if next_page:
             url = next_page
-            yield scrapy.Request(url,callback=self.parse_pagination,cb_kwargs={"next_page":url,"records":records})
+            yield scrapy.Request(url,callback=self.parse_pagination,cb_kwargs={"next_page":url,"records":total_records})
     
     def parse_pagination(self,response,next_page,records):
         sel = Selector(text=response.text)
@@ -58,22 +48,6 @@ class TunisieSpiderSpider(scrapy.Spider):
             self.count +=1
             listing_url = response.urljoin(row.xpath("./td[8]/a/@href").get())
             yield scrapy.Request(url=listing_url,callback=self.parse_listing)
-            # loader = ItemLoader(item=TunisieItem())
-            # region = row.xpath("./td[2]/a/text()").get()
-            # nature = row.xpath("./td[4]/text()").get()
-            # typpe = row.xpath("./td[6]/text()").get()
-            # annonce = row.xpath("./td[8]/a/text()").get()
-            # prix = row.xpath("./td[10]/text()").get()
-            # modifiee = row.xpath("./td[12]/text()").get()
-
-            # loader.add_value("Region",value=region)
-            # loader.add_value("Nature",value=nature)
-            # loader.add_value("Type",value=typpe)
-            # loader.add_value("Annonce",value=annonce)
-            # loader.add_value("Prix",value=prix)
-            # loader.add_value("Modifiee",value=modifiee)
-
-            # yield loader.load_item()
         while True:
             try:
                 q = urlparse(next_page)
@@ -173,7 +147,6 @@ class TunisieSpiderSpider(scrapy.Spider):
             loader.add_value("Texte",value=texte)
             loader.add_value("Inseree",value=inseree)
             loader.add_value("Modifiee",value=modifiee)
-            # self.con.print(reference,title,category,localization,adresse,prix,texte,inseree,modifiee,tel,mob,main)
             yield loader.load_item()
         except Exception as e:
             print(e)

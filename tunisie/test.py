@@ -16,3 +16,12 @@
 # import os
 # p = os.path.exists('firefoxdriver/geckodriver')
 # print(p)
+# from rich.pretty import pprint
+# count = 1
+# for i in range(5):
+#     count +=1
+#     print(f"\r[+] ITEM added to DB {count}",end='')
+from tunisie import get
+
+print("ehsan")
+get()

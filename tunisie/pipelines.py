@@ -9,14 +9,16 @@ import sqlite3
 from itemadapter import ItemAdapter
 from rich.pretty import pprint
 
+
 class TunisiePipeline:
     def process_item(self, item, spider):
         return item
         
 class SQLite_Pipeline:
     def __init__(self):
+        self.count = 0
         # change the database name accordingly
-        self.con = sqlite3.connect("demo.db")
+        self.con = sqlite3.connect("announce.db")
         self.cur = self.con.cursor()
         self.cur.execute(
             """
@@ -36,30 +38,36 @@ class SQLite_Pipeline:
         )
     
     def process_item(self,item,spider):
-        
-        self.cur.execute("""SELECT * FROM listings WHERE Reference = ? AND Prix = ? """,(item['Reference'],item['Prix']))
-        exist = self.cur.fetchone()
-        if exist:
-            spider.logger.warn("[+] Item already exist in the database\n")
-            return item
-        else:
-            pprint("[+] ITEM added to DB \n")
-            self.cur.execute(
-                """
-                INSERT INTO listings(Reference,Title,Category,Localisation,Adresse,Prix,Texte,Inseree,Modifiee) VALUES (?,?,?,?,?,?,?,?,?)
-                """,
-                (
-                item['Reference'],
-                item['Title'],
-                item['Category'],
-                item['Localisation'],
-                item['Adresse'],
-                item['Prix'],
-                item['Texte'],
-                item['Inseree'],
-                item['Modifiee'],
+        # if bool(item['Save']):
+        if spider.save_db:
+            self.cur.execute("""SELECT * FROM listings WHERE Reference = ? AND Prix = ? """,(item['Reference'],item['Prix']))
+            exist = self.cur.fetchone()
+            if exist:
+                self.count +=1
+                # spider.logger.warn("[+] Item already exist in the database\n")
+                print(f" [+] Item already exist in the database {self.count}\n")
+                return item
+            else:
+                self.count +=1
+                print(f"\r [+] ITEM added to DB {self.count}",end='')
+                self.cur.execute(
+                    """
+                    INSERT INTO listings(Reference,Title,Category,Localisation,Adresse,Prix,Texte,Inseree,Modifiee) VALUES (?,?,?,?,?,?,?,?,?)
+                    """,
+                    (
+                    item['Reference'],
+                    item['Title'],
+                    item['Category'],
+                    item['Localisation'],
+                    item['Adresse'],
+                    item['Prix'],
+                    item['Texte'],
+                    item['Inseree'],
+                    item['Modifiee'],
+                    )
                 )
-            )
-            self.con.commit()
-
+                self.con.commit()
+                return item
+        else:
+            print(f"\r [+] ITEM Processed {self.count}",end='')
             return item
