@@ -10,18 +10,23 @@ import schedule
 def get(Country='Tunisie', Gouvernorat='', Delegation='', Localite='', Rubrique='', Nature='', Type='', Code='',
         with_photos=False, price_min='', price_max='', surface_min='', surface_max='', pro='Indifferent', save=True,
         recurrence=None, headless=True):
-    def job():
-        scrap(Country, Gouvernorat, Delegation, Localite, Rubrique, Nature, Type, Code,
-              with_photos, price_min, price_max, surface_min, surface_max, pro,
-              save, headless)
 
     if recurrence:
-        schedule.every(recurrence).hours.do(job)
+        # will run every hour
+        # recurrence = 60 minutes => 1 hour
+        schedule.every(recurrence).minutes.do(scrap_job, Country, Gouvernorat, Delegation, Localite, Rubrique, Nature, Type, Code,
+        with_photos, price_min, price_max, surface_min, surface_max, pro, save, headless)
+        while True:
+            print("\r [+] Waiting..",end='')
+            schedule.run_pending()
+            time.sleep(1)
     else:
-        job()
+        scrap_job(Country, Gouvernorat, Delegation, Localite, Rubrique, Nature, Type, Code,
+        with_photos, price_min, price_max, surface_min, surface_max, pro, save, headless)
 
 
-def scrap(Country='Tunisie', Gouvernorat='', Delegation='', Localite='', Rubrique='', Nature='', Type='', Code='',
+
+def scrap_job(Country='Tunisie', Gouvernorat='', Delegation='', Localite='', Rubrique='', Nature='', Type='', Code='',
           with_photos=False, price_min='', price_max='', surface_min='', surface_max='', pro='Indifferent', save=True,
           headless=True):
     play = sync_playwright().start()
