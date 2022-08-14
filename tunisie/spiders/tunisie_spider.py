@@ -16,7 +16,10 @@ class TunisieSpiderSpider(scrapy.Spider):
     save_db = ''
 
     def start_requests(self):
-        self.save_db = bool(self.save)
+        if self.save == 'True':
+            self.save_db = True
+        elif self.save == 'False':
+            self.save_db = False
         url = 'http://www.tunisie-annonce.com/'
         yield scrapy.Request(url, callback=self.parse)
 

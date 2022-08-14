@@ -46,6 +46,7 @@ class SQLite_Pipeline:
                 self.count +=1
                 # spider.logger.warn("[+] Item already exist in the database\n")
                 print(f" [+] Item already exist in the database {self.count}\n")
+                print(spider.save_db)
                 return item
             else:
                 self.count +=1
@@ -69,5 +70,6 @@ class SQLite_Pipeline:
                 self.con.commit()
                 return item
         else:
+            self.count +=1
             print(f"\r [+] ITEM Processed {self.count}",end='')
             return item

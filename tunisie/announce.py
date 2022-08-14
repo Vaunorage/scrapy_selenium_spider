@@ -8,9 +8,8 @@ import schedule
 
 
 def get(Country='Tunisie', Gouvernorat='', Delegation='', Localite='', Rubrique='', Nature='', Type='', Code='',
-        with_photos=False, price_min='', price_max='', surface_min='', surface_max='', pro='Indifferent', save=True,
-        recurrence=None, headless=True):
-
+        with_photos=None, price_min='', price_max='', surface_min='', surface_max='', pro='Indifferent', save=None,
+        recurrence=None, headless=None):
     if recurrence:
         # will run every hour
         # recurrence = 60 minutes => 1 hour
@@ -26,11 +25,10 @@ def get(Country='Tunisie', Gouvernorat='', Delegation='', Localite='', Rubrique=
 
 
 
-def scrap_job(Country='Tunisie', Gouvernorat='', Delegation='', Localite='', Rubrique='', Nature='', Type='', Code='',
-          with_photos=False, price_min='', price_max='', surface_min='', surface_max='', pro='Indifferent', save=True,
-          headless=True):
+def scrap_job(Country, Gouvernorat, Delegation, Localite, Rubrique, Nature, Type, Code,
+        with_photos, price_min, price_max, surface_min, surface_max, pro, save, headless):
     play = sync_playwright().start()
-    print(' [+] Browser started')
+    print('\n [+] Browser started')
     browser = play.firefox.launch(headless=headless)
 
     page = browser.new_page()
