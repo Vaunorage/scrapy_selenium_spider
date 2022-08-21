@@ -31,7 +31,7 @@ class SQLite_Pipeline:
         if spider.save_db:
 
             try:
-                #creates the dataframe
+                # creates the dataframe
 
                 item_dict = dict(item)
                 tmp_df = pd.DataFrame({e: [item_dict[e]] for e in item_dict})
@@ -41,20 +41,22 @@ class SQLite_Pipeline:
                 tmp_df.head(0).to_sql(name='listings', con=self.con, if_exists='append')
 
                 # checks if item exists
-                exists = pd.read_sql(f"select * from listings where Reference={item['Reference']}", con=self.con)
+                exists = pd.read_sql(f"select * from listings where Reference={item['Reference']}"
+                                     f" AND Modifiee='{item['Modifiee']}'", con=self.con)
 
-                text_item = f"\r [+] COUNT : {self.count}, REFERENCE : {item['Reference']}"
+                text_item = f"\r [+] Processing : COUNT : {self.count}, REFERENCE : {item['Reference']}," \
+                            f" MODIFIEE : {item['Modifiee']}"
 
                 if exists.empty:
 
                     tmp_df.to_sql(name='listings', con=self.con, if_exists='append')
 
-                    self.count += 1
-
                     print(text_item + " ITEM added to DB", end='')
                 else:
 
                     print(text_item + " ITEM found not added to DB", end='')
+
+                self.count += 1
 
                 return item
             except Exception as e:
