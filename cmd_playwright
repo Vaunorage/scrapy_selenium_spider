@@ -1,2 +1,3 @@
-pip install pytest-playwright
+poetry add pytest-playwright
+poetry shell
 playwright install
