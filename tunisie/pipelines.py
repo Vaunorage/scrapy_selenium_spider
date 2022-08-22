@@ -61,6 +61,7 @@ class SQLite_Pipeline:
                 return item
             except Exception as e:
                 print(f"Exception : {e}")
+                return item
         else:
             self.count += 1
             print(f"\r [+] ITEM Processed {self.count}", end='')
