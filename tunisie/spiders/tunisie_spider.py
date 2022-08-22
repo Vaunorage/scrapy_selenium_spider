@@ -68,7 +68,7 @@ class TunisieSpiderSpider(scrapy.Spider):
                 continue
 
     def parse_listing(self, response):
-        reference, title, category, localization, adresse, prix, texte, inseree, modifiee, tel, mob, main = 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None'
+        reference, title, category, localization, adresse, prix, texte, inseree, modifiee, tel, mob, fax, images = 'None','None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None'
         sel = Selector(text=response.text)
         loader = ItemLoader(item=TunisieItem())
         try:
@@ -131,14 +131,34 @@ class TunisieSpiderSpider(scrapy.Spider):
 
             try:
                 tel = sel.xpath("//table[@class='da_rub_cadre_contact']//li[@class='phone']/span/text()").get()
+                if tel:
+                    pass
+                else:
+                    tel = 'None'
             except:
                 pass
             try:
                 mob = sel.xpath("//table[@class='da_rub_cadre_contact']//li[@class='cellphone']/span/text()").get()
+                if mob:
+                    pass
+                else:
+                    mob = 'None'
             except:
                 pass
             try:
-                mail = sel.xpath("//table[@class='da_rub_cadre_contact']//li[@class='fax']/span/text()").get()
+                fax = sel.xpath("//table[@class='da_rub_cadre_contact']//li[@class='fax']/span/text()").get()
+                if fax:
+                    pass
+                else:
+                    fax = 'None'
+            except:
+                pass
+            try:
+                images = sel.xpath("//table[@class='da_rub_cadre'][4]//table[@class='PhotoView1']//img[@class='PhotoMin1']/@src").getall()
+                if images:
+                    images = ",".join([response.urljoin(img) for img in images])
+                else:
+                    images = 'None'
             except:
                 pass
             loader.add_value("Reference", value=reference)
@@ -150,6 +170,10 @@ class TunisieSpiderSpider(scrapy.Spider):
             loader.add_value("Texte", value=texte)
             loader.add_value("Inseree", value=inseree)
             loader.add_value("Modifiee", value=modifiee)
+            loader.add_value("Telephone", value=tel)
+            loader.add_value("Mobile", value=mob)
+            loader.add_value("Fax", value=fax)
+            loader.add_value("Images", value=images)
             yield loader.load_item()
         except Exception as e:
             print(e)

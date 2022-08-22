@@ -32,7 +32,11 @@ class SQLite_Pipeline:
                 Prix TEXT,
                 Texte TEXT,
                 Inseree TEXT,
-                Modifiee TEXT
+                Modifiee TEXT,
+                Telephone TEXT,
+                Mobile TEXT,
+                Fax TEXT,
+                Images TEXT
             )
             """,
         )
@@ -53,7 +57,7 @@ class SQLite_Pipeline:
                 print(f"\r [+] ITEM added to DB {self.count}",end='')
                 self.cur.execute(
                     """
-                    INSERT INTO listings(Reference,Title,Category,Localisation,Adresse,Prix,Texte,Inseree,Modifiee) VALUES (?,?,?,?,?,?,?,?,?)
+                    INSERT INTO listings(Reference,Title,Category,Localisation,Adresse,Prix,Texte,Inseree,Modifiee,Telephone,Mobile,Fax,Images) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
                     """,
                     (
                     item['Reference'],
@@ -65,6 +69,10 @@ class SQLite_Pipeline:
                     item['Texte'],
                     item['Inseree'],
                     item['Modifiee'],
+                    item['Telephone'],
+                    item['Mobile'],
+                    item['Fax'],
+                    item['Images']
                     )
                 )
                 self.con.commit()

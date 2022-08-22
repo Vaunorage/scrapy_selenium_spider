@@ -1,7 +1,6 @@
-itemadapter==0.6.0
+itemadapter==0.7.0
 itemloaders==1.0.4
-playwright==1.22.0
+playwright==1.25.1
 rich==12.5.1
 schedule==1.1.0
-Scrapy==2.6.1
-selenium==4.4.0
+Scrapy==2.6.2
