@@ -60,3 +60,19 @@ class TunisieItem(scrapy.Item):
         input_processor=MapCompose(clean, str.strip),
         output_processor=TakeFirst()
     )
+    Telephone = scrapy.Field(
+        input_processor=MapCompose(clean, str.strip),
+        output_processor=TakeFirst()
+    )
+    Mobile = scrapy.Field(
+        input_processor=MapCompose(clean, str.strip),
+        output_processor=TakeFirst()
+    )
+    Fax = scrapy.Field(
+        input_processor=MapCompose(clean, str.strip),
+        output_processor=TakeFirst()
+    )
+    Images = scrapy.Field(
+        input_processor=MapCompose(clean, str.strip),
+        output_processor=TakeFirst()
+    )
