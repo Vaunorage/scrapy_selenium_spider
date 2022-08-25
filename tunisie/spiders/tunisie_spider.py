@@ -6,6 +6,7 @@ from scrapy.selector import Selector
 from ..items import TunisieItem
 from scrapy.loader import ItemLoader
 from rich.console import Console
+import math
 
 
 class TunisieSpiderSpider(scrapy.Spider):
@@ -14,6 +15,7 @@ class TunisieSpiderSpider(scrapy.Spider):
     count = 0
     con = Console()
     save_db = ''
+    once = True
 
     def start_requests(self):
         if self.save == 'True':
@@ -50,22 +52,28 @@ class TunisieSpiderSpider(scrapy.Spider):
             self.count += 1
             listing_url = response.urljoin(row.xpath("./td[8]/a/@href").get())
             yield scrapy.Request(url=listing_url, callback=self.parse_listing)
-        while True:
-            try:
-                q = urlparse(next_page)
-                q_dict = parse_qs(q.query)
-                page = q_dict.get("rech_page_num")[0]
-                if self.count < records:
-                    url = next_page.replace(f"rech_page_num={page}", f"rech_page_num={int(page) + 1}")
-                    yield scrapy.Request(url, callback=self.parse_pagination,
-                                         cb_kwargs={"next_page": url, "records": records})
-                else:
+            # generate urls here first 784/25 == 31 pages
+        if self.once:
+            self.once = False
+            estimated_pages = math.ceil(records/25)
+            for e_page in range(3,estimated_pages+1):
+                try:
+                    q = urlparse(next_page)
+                    q_dict = parse_qs(q.query)
+                    page = q_dict.get("rech_page_num")[0]
+                    if self.count < records:
+                        url = next_page.replace(f"rech_page_num={page}", f"rech_page_num={e_page}")
+                        yield scrapy.Request(url, callback=self.parse_pagination,
+                                             cb_kwargs={"next_page": url, "records": records})
+                    else:
+                        break
+                except Exception as e:
+                    self.con.print_exception()
                     break
-            except Exception as e:
-                self.con.print_exception()
-                break
-            else:
-                continue
+                else:
+                    continue
+        else:
+            pass
 
     def parse_listing(self, response):
         reference, title, category, localization, adresse, prix, texte, inseree, modifiee, tel, mob, fax, images = 'None','None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None', 'None'

@@ -1,7 +1,6 @@
 
 import announce
 
-
-announce.get(Country='Tunisie',Gouvernorat='Beja',save=True,with_photos=True,headless=True)
+announce.get(Country='Tunisie',Gouvernorat='Ben arous',save=True,headless=True)
 
 
