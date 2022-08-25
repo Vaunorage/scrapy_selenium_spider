@@ -94,7 +94,6 @@ def scrap_job(Country, Gouvernorat, Delegation, Localite, Rubrique, Nature, Type
     results = sel.xpath("//table[@class='RecordsNumber']//td/b[1]/text()").get()
     matched = re.search(".*[0-9]", results).group()
     total_records = int(matched.replace(" ", ''))
-    print(f' [+] Records = {total_records}')
     if not total_records == 0:
         with open("config.json", 'w') as f:
             json.dump({'source': source}, f)
