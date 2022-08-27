@@ -1,6 +1,3 @@
 #!/bin/bash
 
-poetry shell
-
-playwright install
-python ./tunisie/main.py
+/app/.venv/bin/python ./tunisie/main.py
