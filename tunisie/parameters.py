@@ -454,3 +454,13 @@ class Rubrique(Enum):
 
 class Type(Enum):
     pass
+
+
+@dataclasses.dataclass
+class Sort:
+    PRICE_ASC = "Prix de - à +"
+    PRICE_DSC = "Prix de + à -"
+    PUBLICATION_DT_ASC = "Publiée de - à +"
+    PUBLICATION_DT_DSC = "Publiée de + à -"
+    MODICATION_DT_ASC = "Modifiée de - à +"
+    MODICATION_DT_DSC = "Modifiée de + à -"

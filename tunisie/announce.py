@@ -10,22 +10,22 @@ import schedule
 
 def get(country, gouvernerat='', delegation='', localite='', rubrique='', nature='',
         type='', code='', with_photos=None, price_min='', price_max='', surface_min='', surface_max='',
-        pro='Indifferent', save=True, recurrence=None, headless=True):
+        pro='Indifferent', sort=None, save=True, recurrence=None, headless=True):
     if recurrence:
         schedule.every(recurrence).minutes.do(scrap_job, country, gouvernerat, delegation, localite, rubrique, nature,
                                               type, code, with_photos, price_min, price_max, surface_min, surface_max,
-                                              pro, save, headless)
+                                              pro, sort, save, headless)
         while True:
             print("\r [+] Waiting..", end='')
             schedule.run_pending()
             time.sleep(1)
     else:
         scrap_job(country, gouvernerat, delegation, localite, rubrique, nature, type, code, with_photos, price_min,
-                  price_max, surface_min, surface_max, pro, save, headless)
+                  price_max, surface_min, surface_max, pro, sort, save, headless)
 
 
 def scrap_job(country, gouvernorat, delegation, localite, rubrique, nature, type, code, with_photos, price_min,
-              price_max, surface_min, surface_max, pro, save, headless):
+              price_max, surface_min, surface_max, pro, sort, save, headless):
     play = sync_playwright().start()
     print('\n [+] Browser started')
     browser = play.firefox.launch(headless=headless)
@@ -66,6 +66,12 @@ def scrap_job(country, gouvernorat, delegation, localite, rubrique, nature, type
         page.locator("//div[@id='combo_sou_typ']").click()
         page.locator("//div[@style='width: 100%; overflow: hidden;']", has_text=type).click()
         time.sleep(1)
+
+    #TODO : fix
+    # if sort:
+    #     page.locator("//*[@id='rech_order_by']").click()
+    #     page.locator("//*[@style='width: 100%; overflow: hidden;']", has_text=sort).click()
+    #     time.sleep(1)
 
     if code:
         page.fill("//input[@id='rech_cod_ann']", str(code))
