@@ -33,7 +33,6 @@ class SQLite_Pipeline:
 
             try:
                 # creates the dataframe
-
                 item_dict = dict(item)
                 tmp_df = pd.DataFrame({e: [item_dict[e]] for e in item_dict})
                 tmp_df['Updated'] = datetime.now()
@@ -45,17 +44,17 @@ class SQLite_Pipeline:
                 exists = pd.read_sql(f"select * from listings where Reference={item['Reference']}"
                                      f" AND Modifiee='{item['Modifiee']}'", con=self.con)
 
-                text_item = f"\r [+] Processing : COUNT : {self.count}/{spider.total_nb}, REFERENCE : {item['Reference']}," \
+                text_item = f"\r Processing : COUNT : {self.count}/{spider.total_nb}, REFERENCE : {item['Reference']}," \
                             f" MODIFIEE : {item['Modifiee']}"
 
                 if exists.empty:
 
                     tmp_df.to_sql(name='listings', con=self.con, if_exists='append')
 
-                    my_logger.info(text_item + " ITEM added to DB", end='')
+                    my_logger.info(text_item + " ITEM added to DB")
                 else:
 
-                    my_logger.info(text_item + " ITEM found not added to DB", end='')
+                    my_logger.info(text_item + " ITEM found not added to DB")
 
                 self.count += 1
 
