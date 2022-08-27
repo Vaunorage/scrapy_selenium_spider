@@ -2,10 +2,15 @@ import json
 import re
 import time
 
-import schedule
 from playwright.sync_api import sync_playwright
-from subprocess import call
+from scrapy.utils.project import get_project_settings
+from scrapy.crawler import CrawlerProcess
+from spiders.tunisie_spider import TunisieSpider
 from scrapy import Selector
+import schedule
+
+from tunisie.logger import my_logger
+
 
 def get(country, gouvernerat='', delegation='', localite='', rubrique='', nature='',
         type='', code='', with_photos=None, price_min='', price_max='', surface_min='', surface_max='',
@@ -26,12 +31,12 @@ def get(country, gouvernerat='', delegation='', localite='', rubrique='', nature
 def scrap_job(country, gouvernorat, delegation, localite, rubrique, nature, type, code, with_photos, price_min,
               price_max, surface_min, surface_max, pro, sort, save, headless):
     play = sync_playwright().start()
-    print('\n [+] Browser started')
+    my_logger.info('Browser started')
     browser = play.firefox.launch(headless=headless)
 
     page = browser.new_page()
     page.goto('http://www.tunisie-annonce.com/AnnoncesImmobilier.asp')
-    print(' [+] Setting inputs')
+    my_logger.info('Setting inputs')
     page.locator("//div[@id='combo_pay']").click()
     page.locator("//div[@style='width: 100%; overflow: hidden;']", has_text=country).click()
     time.sleep(1)
@@ -107,7 +112,7 @@ def scrap_job(country, gouvernorat, delegation, localite, rubrique, nature, type
 
     source = page.content()
     play.stop()
-    print(' [+] Browser closed')
+    my_logger.info('Browser closed')
     sel = Selector(text=source)
     results = sel.xpath("//table[@class='RecordsNumber']//td/b[1]/text()").get()
     matched = re.search(".*[0-9]", results).group()
@@ -115,10 +120,12 @@ def scrap_job(country, gouvernorat, delegation, localite, rubrique, nature, type
     if not total_records == 0:
         with open("config.json", 'w') as f:
             json.dump({'source': source}, f)
-        print(" [+] Starting Crawling")
-        filename = country + "_" + gouvernorat
-        call(['scrapy', 'crawl', 'tunisie_spider', '-a', f'save={save}', '-o', f'{filename}.csv'])
-        print(" [+] Finished")
-        print(f" [+] Generated file {filename}.csv")
+        my_logger.info("Starting Crawling")
+
+        settings = get_project_settings()
+        process = CrawlerProcess(settings=settings)
+        process.crawl(TunisieSpider, save=save)
+        process.start()
+        my_logger.info("Finished")
     else:
-        print(" [+] No records found ")
+        my_logger.info("No records found ")

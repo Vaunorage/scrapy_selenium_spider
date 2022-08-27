@@ -4,7 +4,7 @@ import re
 from urllib.parse import parse_qs, urlparse
 import scrapy
 from scrapy.selector import Selector
-from ..items import TunisieItem
+from tunisie.items import TunisieItem
 from scrapy.loader import ItemLoader
 from rich.console import Console
 import math
@@ -15,14 +15,9 @@ class TunisieSpider(scrapy.Spider):
     allowed_domains = ['tunisie-annonce.com']
     count = 0
     con = Console()
-    save_db = ''
     once = True
 
     def start_requests(self):
-        if self.save == 'True':
-            self.save_db = True
-        elif self.save == 'False':
-            self.save_db = False
         url = 'http://www.tunisie-annonce.com/'
         yield scrapy.Request(url, callback=self.parse)
 

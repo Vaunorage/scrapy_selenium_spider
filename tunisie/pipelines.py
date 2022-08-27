@@ -11,6 +11,7 @@ from datetime import datetime
 import pandas as pd
 from sqlalchemy import inspect
 
+from tunisie.logger import my_logger
 
 class TunisiePipeline:
     def process_item(self, item, spider):
@@ -28,11 +29,10 @@ class SQLite_Pipeline:
         self.con.close()
 
     def process_item(self, item, spider):
-        if spider.save_db:
+        if spider.save:
 
             try:
                 # creates the dataframe
-
                 item_dict = dict(item)
                 tmp_df = pd.DataFrame({e: [item_dict[e]] for e in item_dict})
                 tmp_df['Updated'] = datetime.now()
@@ -44,25 +44,25 @@ class SQLite_Pipeline:
                 exists = pd.read_sql(f"select * from listings where Reference={item['Reference']}"
                                      f" AND Modifiee='{item['Modifiee']}'", con=self.con)
 
-                text_item = f"\r [+] Processing : COUNT : {self.count}/{spider.total_nb}, REFERENCE : {item['Reference']}," \
+                text_item = f"\r Processing : COUNT : {self.count}/{spider.total_nb}, REFERENCE : {item['Reference']}," \
                             f" MODIFIEE : {item['Modifiee']}"
 
                 if exists.empty:
 
                     tmp_df.to_sql(name='listings', con=self.con, if_exists='append')
 
-                    print(text_item + " ITEM added to DB", end='')
+                    my_logger.info(text_item + " ITEM added to DB")
                 else:
 
-                    print(text_item + " ITEM found not added to DB", end='')
+                    my_logger.info(text_item + " ITEM found not added to DB")
 
                 self.count += 1
 
                 return item
             except Exception as e:
-                print(f"Exception : {e}")
+                my_logger.warn(f"Exception : {e}")
                 return item
         else:
             self.count += 1
-            print(f"\r [+] ITEM Processed {self.count}", end='')
+            my_logger.info(f" ITEM Processed {self.count}", end='')
             return item
