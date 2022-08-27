@@ -1,12 +1,19 @@
 FROM python:3.8-slim-buster
 
-RUN sudo apt-get update && sudo apt-get install -y libpq-dev curl python3 python3-pip
-RUN sudo -H pip install poetry
+COPY . ./app
 
-COPY . .
+WORKDIR ./app
 
-RUN oetry config virtualenvs.in-project true
+ENV PYTHONPATH "${PYTHONPATH}:./app"
+
+
+RUN apt-get update && apt-get install -y libpq-dev curl python3 python3-pip
+RUN pip install poetry
+
+RUN poetry config virtualenvs.in-project true
 RUN poetry install
-RUN poetry shell
 
-CMD [ "python", "./tunisie/main.py"]
+RUN chmod +x ./entrypoint.sh
+RUN chmod +x ./cmd_playwright.sh
+
+ENTRYPOINT ["./entrypoint.sh"]

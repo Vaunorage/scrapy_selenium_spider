@@ -1,3 +1,0 @@
-poetry add pytest-playwright
-poetry shell
-playwright install

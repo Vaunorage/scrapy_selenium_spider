@@ -2,11 +2,10 @@ import json
 import re
 import time
 
+import schedule
 from playwright.sync_api import sync_playwright
 from subprocess import call
 from scrapy import Selector
-import schedule
-
 
 def get(country, gouvernerat='', delegation='', localite='', rubrique='', nature='',
         type='', code='', with_photos=None, price_min='', price_max='', surface_min='', surface_max='',
