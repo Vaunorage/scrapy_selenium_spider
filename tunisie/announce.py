@@ -7,6 +7,7 @@ from subprocess import call
 from scrapy import Selector
 import schedule
 
+
 def get(country, gouvernerat='', delegation='', localite='', rubrique='', nature='',
         type='', code='', with_photos=None, price_min='', price_max='', surface_min='', surface_max='',
         pro='Indifferent', save=True, recurrence=None, headless=True):

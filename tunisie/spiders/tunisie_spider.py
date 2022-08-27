@@ -1,3 +1,4 @@
+import copy
 import json
 import re
 from urllib.parse import parse_qs, urlparse
@@ -9,7 +10,7 @@ from rich.console import Console
 import math
 
 
-class TunisieSpiderSpider(scrapy.Spider):
+class TunisieSpider(scrapy.Spider):
     name = 'tunisie_spider'
     allowed_domains = ['tunisie-annonce.com']
     count = 0
@@ -32,6 +33,8 @@ class TunisieSpiderSpider(scrapy.Spider):
         results = sel.xpath("//table[@class='RecordsNumber']//td/b[1]/text()").get()
         matched = re.search(".*[0-9]", results).group()
         total_records = int(matched.replace(" ", ''))
+        self.total_nb = copy.deepcopy(total_records)
+
         if total_records > 25:
             next_page = sel.xpath("//td[@width='40'][3]/a/@href").get()
             next_page = response.urljoin(next_page)

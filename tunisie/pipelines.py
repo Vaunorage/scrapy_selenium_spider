@@ -44,7 +44,7 @@ class SQLite_Pipeline:
                 exists = pd.read_sql(f"select * from listings where Reference={item['Reference']}"
                                      f" AND Modifiee='{item['Modifiee']}'", con=self.con)
 
-                text_item = f"\r [+] Processing : COUNT : {self.count}, REFERENCE : {item['Reference']}," \
+                text_item = f"\r [+] Processing : COUNT : {self.count}/{spider.total_nb}, REFERENCE : {item['Reference']}," \
                             f" MODIFIEE : {item['Modifiee']}"
 
                 if exists.empty:
