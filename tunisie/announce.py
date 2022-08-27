@@ -67,7 +67,7 @@ def scrap_job(country, gouvernorat, delegation, localite, rubrique, nature, type
         page.locator("//div[@style='width: 100%; overflow: hidden;']", has_text=type).click()
         time.sleep(1)
 
-    #TODO : fix
+    #TODO : fix x
     # if sort:
     #     page.locator("//*[@id='rech_order_by']").click()
     #     page.locator("//*[@style='width: 100%; overflow: hidden;']", has_text=sort).click()
