@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster
+FROM openstax/python3-chrome-base
 
 COPY . ./app
 
@@ -6,14 +6,14 @@ WORKDIR ./app
 
 ENV PYTHONPATH "${PYTHONPATH}:./app"
 
-
-RUN apt-get update && apt-get install -y libpq-dev curl python3 python3-pip
 RUN pip install poetry
 
 RUN poetry config virtualenvs.in-project true
 RUN poetry install
 
+RUN ./.venv/bin/python -m playwright install
+RUN ./.venv/bin/python -m playwright install-deps
+
 RUN chmod +x ./entrypoint.sh
-RUN chmod +x ./cmd_playwright.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
